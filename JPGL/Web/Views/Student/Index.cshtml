@@ -1,0 +1,432 @@
+﻿@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Index</title>
+    <script src="~/Scripts/jquery-1.8.2.js"></script>
+    <script src="~/Content/EasyUI/jquery.easyui.min.js"></script>
+    <script src="~/Content/EasyUI/easyui-lang-zh_CN.js"></script>
+    <script src="~/Scripts/Myscript/Common.js"></script>
+    <script src="~/Scripts/Myscript/MyAjaxForm.js"></script>
+    <link href="~/Content/EasyUI/themes/default/easyui.css" rel="stylesheet" />
+    @*<link href="~/Content/EasyUI/default.css" rel="stylesheet" />*@
+    <link href="~/Content/EasyUI/themes/icon.css" rel="stylesheet" />
+    <script type="text/javascript">
+        $(function () {
+            initTable('', '', '', '', '', '');
+            initCombobox();    //初始化复选框
+            $("#addDiv").css("display", "none"); //隐藏div
+
+        });
+
+        function initTable(StuNo, StuName, MajorNo, StuGrade, StuTel, StuCredit) {
+
+            $("#tt").datagrid({
+                //指向一个地址，当表格加载完成后自动请求该地址
+                //自动向后台发送    rows 当前页多少条数据        page：当前页
+                //要求返回的数据json对象  {total:200,rows:[{},{}]}
+                url: '/Student/ShowNewsList?StuNo=' + StuNo + '&StuName=' + StuName + '&MajorNo=' + MajorNo + '&StuGrade=' + StuGrade + '&StuTel=' + StuTel + '&StuCredit=' + StuCredit + '',
+                title: "学生管理",
+                fit: true,
+                fitColumns: true,
+                // height: $(window).height() - 10,
+                //width: function () { return document.body.clientWidth * 0.9 },
+                idField: 'StuNo',      //后台返回数据中的主键列。一定注意大小写。
+                loadMsg: "正在加载学生信息........",
+                pagination: true,      //启用分页
+                singleSelect: true,      //只允许选中一行
+                pageSize: 10,        //一页默认多少条
+                pageNumber: 1,        //默认页
+                rownumbers: true,//行号
+                pageList: [10, 20, 30],      //允许一页多少条数据
+                queryParams: {},          //异步请求可以额外传递的数据
+                columns: [[
+               { field: 'ck', checkbox: true, align: 'left', width: 50 },   // 设置cheakbox
+               { field: 'StuNo', title: '学号', width: 60 },
+              { field: 'StuName', title: '姓名', width: 50 },
+              {
+                  field: 'tbMajor.MajorName', title: '专业', width: 50,
+                  formatter: function (value, row, index) {      //绑定外键属性的值
+                      return row['tbMajor']['MajorName'];
+                  }
+              },
+               { field: 'StuGrade', title: '班级', width: 50 },
+               { field: 'StuTel', title: '联系电话', width: 80 },
+               { field: 'StuCredit', title: '学分', width: 40, },
+               {
+                   field: 'operate', title: '操作', align: 'center', width: $(this).width() * 0.1,
+                   formatter: function (value, row, index) {
+                       var str = "";
+
+                       str += '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',
+                       str += '<a href="#" name="update" id="update" class="easyui-linkbutton" onclick="updateStuInfo(' + row.StuNo + ')" ></a>';
+                       str += '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;',
+                       str += '<a href="#" name="delete" id="delete" class="easyui-linkbutton" onclick="deleteOrderInfo(' + row.StuNo + ')" ></a>';
+                       return str;
+                   }
+               }
+
+                ]],
+                //数据加载前就初始化文本框
+                onBeforeLoad: function (row, param) {
+                    //初始化名称搜索文本框
+                    $('#searchNo').textbox({
+                        width: 150,
+                        prompt: '请输入搜索学号',
+                    });
+                    $('#searchName').textbox({
+                        width: 150,
+                        prompt: '请输入搜索姓名',
+                    });
+                    //初始化公司搜索文本框
+                    $('#searchMajor').textbox({
+                        width: 150,
+                        prompt: '请输入搜索专业',
+                    });
+                    //初始化类别搜索下拉框
+                    $.ajax({
+                        url: '/Student/InitType',
+                        dataType: 'json',
+                        success: function (data) {
+                            $('#searchMajor').combobox({
+                                data: data,
+                                valueField: 'MajorNo',
+                                textField: 'MajorName',
+                                prompt: '请选择搜索专业',
+                                editable: false  //是否可编辑
+                            });
+                        }
+                    });
+
+                },
+
+                onLoadSuccess: function (data) {
+
+
+                    $("a[name='update']").linkbutton({ text: '编辑', plain: true, iconCls: 'icon-edit' });
+                    $("a[name='delete']").linkbutton({ text: '删除', plain: true, iconCls: 'icon-cancel' });
+
+
+                },
+
+                toolbar: [
+                    //{
+                    //id: 'btnAdd',
+                    //text: '添加',
+                    //iconCls: 'icon-add',
+                    //handler: function () {
+                    //    addBtnClick();
+
+                    //}
+                    //},
+                {
+                    text: '<input type="text" id="searchNo"/>'
+                }, {
+                    text: '<input  type="text"id="searchName" panelheight="auto"/>',
+                }, {
+                    text: '<input type="text" id="searchMajor"/>'
+                },
+                {
+                    id: 'btSearch',
+                    text: '搜索',
+                    iconCls: 'icon-search',
+                    handler: function () {
+                        searchBtnClick();
+
+                    }
+                }],
+            });
+
+        }
+
+        //点击搜索按钮
+        function searchBtnClick() {
+            var nunber = $('#searchNo').val();
+            var name = $('#searchName').val();
+            var major = $('#searchMajor').val();
+            var grade = $('#searchGrade').val();
+            initTable(nunber, name, major, '', '', '');
+        }
+        //点击添加按钮
+        function addBtnClick() {
+
+            $("#addDiv").css("display", "block");
+            $('#addForm').form('clear'); // 添加之前清空表单数据
+            $("#addDiv").dialog({
+                title: "添加学生信息",
+                collapsible: false,
+                minimizable: false,
+                maximizable: false,
+                resizable: true,
+                modal: true,
+                width: 300,
+                height: 300,
+                buttons: [{
+                    text: "确定",
+                    iconCls: "icon-ok",
+                    handler: function () {
+                        //异步把请求提交到后台
+                        Submit();
+                    }
+                }, {
+                    text: "取消",
+                    iconCls: "icon-cancel",
+                    handler: function () {
+                        $("#addDiv").dialog("close");
+                    }
+                }]
+            });
+        }
+        //初始化类别下拉框
+        function initCombobox() {
+            $.ajax({
+                url: '/Student/InitType',
+                dataType: 'json',
+                success: function (data) {
+                    $('#StuMajor').combobox({
+                        data: data,
+                        valueField: 'MajorNo',
+                        textField: 'MajorName',
+                        prompt: '请选择',
+                        editable: false  //是否可编辑
+                    });
+                }
+            });
+        }
+        //确认添加按钮
+        function Submit() {
+            //序列化表格数据
+            var dataJson = $('#addForm').serializeArray();
+            if ($('#txtName').val() == '') {
+                $.messager.show({
+                    title: '提示',
+                    msg: '名称不能为空',
+                    showType: 'show',
+                });
+            } else if ($('#txtMark').val() == '') {
+                $.messager.show({
+                    title: '提示',
+                    msg: '负责人不能为空',
+                    showType: 'show',
+                });
+            } else if ($('#txtCompany').val() == '') {
+                $.messager.show({
+                    title: '提示',
+                    msg: '公司不能为空',
+                    showType: 'show',
+                });
+            }
+            else {
+                $.ajax({
+                    url: '/Order/AddOrders',
+                    type: 'POST',
+                    dataType: 'json',
+                    data: dataJson,
+                    success: function (data) {
+                        var name = $('#txtName').val();
+                        if (data == 0) {
+                            $.messager.alert("提示", name + "已经存在", "warning");
+                        } else if (data == 1) {
+                            $.messager.alert("提示", "添加成功", "info");
+                            $("#addDiv").dialog("close"); //关闭窗口
+                            $("#tt").datagrid("reload");//刷新表格
+                        } else {
+                            $.messager.alert("提醒", "添加失败", "warning");
+                        }
+                    }
+                });
+            }
+        }
+
+        function deleteOrderInfo(index) {
+
+            $.messager.confirm("提示", "确定要删除吗?", function (r) {
+                if (r) {
+                    $.post("/Order/Delete", { OrderID: index }, function (data) {
+                        if (data == "ok") {
+                            $('#tt').datagrid('reload');
+                            $.messager.alert("提示", "删除成功", "info");
+                        }
+                        else {
+                            $.messager.alert("提示", "删除失败", "info");
+                        }
+                    });
+                }
+            });
+            alert(Order);
+        }
+
+        function updateStuInfo(index) {
+            $('#addDiv').css("display", "block");
+            $.post("/Student/GetModelById", { StuNo: index }, function (data) {
+
+                $('#StuNo').textbox("setValue", data.StuNo);
+                //$('#StuNo').textbox({ 'disabled': true }); //设置输入框为禁用
+                $('#StuName').textbox("setValue", data.StuName);
+               
+                //$('#StuMajor').combobox({ 'disabled': true }); //设置输入框为禁用
+                $('#StuMajor').combobox("setValue", data.tbMajor.MajorName);
+                $('#StuGrade').textbox("setValue", data.StuGrade);
+                //$('#StuGrade').textbox({ 'disabled': true }); //设置输入框为禁用
+                $('#StuTel').textbox("setValue", data.StuTel);
+                $('#StuCredit').textbox("setValue", data.StuCredit);
+                //$('#StuCredit').textbox({ 'disabled': true }); //设置输入框为禁用
+            });
+            $('#addDiv').dialog({
+                title: '信息修改',
+                modal: true,
+                width: 300,
+                height: 300,
+                buttons: [{
+                    text: "确定",
+                    iconCls: "icon-ok",
+                    handler: function () {
+                        //异步把请求提交到后台
+                        SubmitEdit(index);
+                    }
+                }, {
+                    text: "取消",
+                    iconCls: "icon-cancel",
+                    handler: function () {
+
+                        $("#addDiv").dialog("close");
+                    }
+                }]
+            });
+        }
+
+        function SubmitEdit(index) {
+            var datajson = $("#addForm").serializeArray();
+            if ($('#StuNo').val() == '') {
+                $.messager.show({
+                    title: '提示',
+                    msg: '学号不能为空',
+                    showType: 'show',
+                });
+            } else if ($('#StuName').val() == '') {
+                $.messager.show({
+                    title: '提示',
+                    msg: '姓名不能为空',
+                    showType: 'show',
+                });
+            }
+            else if ($('#StuGrade').val() == '') {
+                $.messager.show({
+                    title: '提示',
+                    msg: '年纪不能为空',
+                    showType: 'show',
+                });
+            }
+            else if ($('#StuTel').val() == '') {
+                $.messager.show({
+                    title: '提示',
+                    msg: '联系电话不能为空',
+                    showType: 'show',
+                });
+            }
+            else if ($('#StuCredit').val() == '') {
+                $.messager.show({
+                    title: '提示',
+                    msg: '学分不能为空',
+                    showType: 'show',
+                });
+            } else {
+                $.post("/Student/Edit?id=" + index, datajson, function (data) {
+                    if (data == "ok") {
+                        $.messager.alert("提示", "修改成功", "info");
+                        $("#addDiv").dialog("close"); //关闭窗口
+                        $("#tt").datagrid("reload");//刷新表格
+                    }
+                    else {
+                        $.messager.alert("提示", "修改失败", "warning");
+                    }
+                });
+            }
+        }
+    </script>
+</head>
+<body>
+
+    <table id="tt"></table>
+    <div id="addDiv">
+        <form id="addForm">
+            <div style="height:10px"></div>
+            <table>
+                <tr>
+                    <td>
+                        <input type="hidden" name="Id" id="Id" />
+                    </td>
+                </tr>
+                <tr>
+                    <td width="80" align="center">
+                        学号:
+                    </td>
+                    <td>
+                        <input class="easyui-textbox" required="true" name="StuNo" id="StuNo" />
+                    </td>
+                </tr>
+
+                <tr>
+                    <td height="10"></td>
+                </tr>
+
+                <tr>
+                    <td align="center">
+                        姓名:
+                    </td>
+                    <td>
+                        <input class="easyui-textbox" required="true" name="StuName" id="StuName" />
+                    </td>
+                </tr>
+
+                <tr>
+                    <td align="center">
+                        专业:
+                    </td>
+                    <td>
+                        <input class="easyui-combobox" required="true" name="StuMajor" id="StuMajor"  panelheight="auto" style="width: 160px;">
+                    </td>
+                </tr>
+
+                <tr>
+                    <td align="center">
+                        班级：
+                    </td>
+                    <td>
+                        <input class="easyui-textbox" required="true" name="StuGrade" id="StuGrade" />
+                    </td>
+                </tr>
+
+                <tr>
+                    <td align="center">
+                        联系电话:
+                    </td>
+                    <td>
+                        <input class="easyui-numberbox" required="true" name="StuTel" id="StuTel" />
+                    </td>
+                </tr>
+
+                <tr>
+                    <td align="center">
+                        学分:
+                    </td>
+                    <td>
+                        <input class="easyui-numberbox" required="true" name="StuCredit" id="StuCredit" />
+                    </td>
+                </tr>
+
+                <tr>
+                    <td height="10"></td>
+                </tr>
+
+
+            </table>
+        </form>
+    </div>
+</body>
+</html>

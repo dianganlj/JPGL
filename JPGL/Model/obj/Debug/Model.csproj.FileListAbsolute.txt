@@ -1,0 +1,10 @@
+E:\JPGL\Model\bin\Debug\JPGL.Model.dll
+E:\JPGL\Model\bin\Debug\JPGL.Model.pdb
+E:\JPGL\Model\obj\Debug\Model.csprojResolveAssemblyReference.cache
+E:\JPGL\Model\obj\Debug\JPGL.Model.dll
+E:\JPGL\Model\obj\Debug\JPGL.Model.pdb
+C:\Users\diangan\Desktop\文档\桌面应用程序设计\JPGL\Model\bin\Debug\JPGL.Model.dll
+C:\Users\diangan\Desktop\文档\桌面应用程序设计\JPGL\Model\bin\Debug\JPGL.Model.pdb
+C:\Users\diangan\Desktop\文档\桌面应用程序设计\JPGL\Model\obj\Debug\Model.csprojResolveAssemblyReference.cache
+C:\Users\diangan\Desktop\文档\桌面应用程序设计\JPGL\Model\obj\Debug\JPGL.Model.dll
+C:\Users\diangan\Desktop\文档\桌面应用程序设计\JPGL\Model\obj\Debug\JPGL.Model.pdb

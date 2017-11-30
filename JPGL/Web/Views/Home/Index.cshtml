@@ -1,0 +1,211 @@
+﻿@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <script src="~/Scripts/jquery-1.8.2.js"></script>
+    <script src="~/Content/EasyUI/jquery.easyui.min.js"></script>
+    <script src="~/Content/EasyUI/easyui-lang-zh_CN.js"></script>
+    <script src="~/Scripts/Myscript/base-loading.js"></script>
+    <link href="~/Content/EasyUI/themes/default/easyui.css" rel="stylesheet" />
+    <link href="~/Content/EasyUI/default.css" rel="stylesheet" />
+    <link href="~/Content/EasyUI/themes/icon.css" rel="stylesheet" />
+    <title>教培管控中心</title>
+
+    <script type="text/javascript">
+        $(function () {
+            //tabs的点击事件
+            bindTabsEvent();
+            $('#editPwd').css("display", "none");
+            EditPwd();
+        });
+        function bindTabsEvent() {
+            $(".detail").click(function () {
+                //拿到点击标题
+                var title = $(this).text();
+                //拿到点击的url
+                var url = $(this).attr("url");
+                //判断标签是否存在
+                var isExt = $("#tabs").tabs("exists", title);
+                //如果存在则选中
+                if (isExt) {
+                    $("#tabs").tabs("select", title);  //选中
+                    return;
+                }
+                //不存在就添加标签
+                $("#tabs").tabs("add", {
+                    title: title,
+                    content: createTabContent(url),
+                    closable: true
+                });
+            });
+        }
+        function createTabContent(url) {
+            return '<iframe style="width:100%;height:100%;" scrolling="no" frameborder="0" src="' + url + '"></iframe>';
+        }
+
+        function EditPwd() {
+            $('#editpass').click(function () {
+                //设置div为模态
+                $("#editPwd").css("display", "block");
+                $('#editForm').form('clear'); // 添加之前清空表单数据
+                $("#editPwd").dialog({
+                    title: "修改密码",
+                    collapsible: false,
+                    minimizable: false,
+                    maximizable: false,
+                    resizable: true,
+                    modal: true,
+                    width: 300,
+                    height: 300,
+                    buttons: [{
+                        text: "确定",
+                        iconCls: "icon-ok",
+                        handler: function () {
+                            //异步把请求提交到后台
+                            Submit();
+                        }
+                    }, {
+                        text: "取消",
+                        iconCls: "icon-cancel",
+                        handler: function () {
+                            $("#editPwd").dialog("close");
+                        }
+                    }]
+                });
+            });
+        }
+
+        function Submit() {
+            var oldPwd = $('#txtOldPwd').val();
+            var newPwd = $('#txtNewPwd').val();
+            var rePwd = $('#txtRePwd').val();
+            if (oldPwd == '') {
+                $.messager.show({
+                    title: '提示',
+                    msg: '请输入旧密码',
+                    showType: 'show',
+                });
+            } else if (newPwd == "") {
+                $.messager.show({
+                    title: '提示',
+                    msg: '请输入新密码',
+                    showType: 'show',
+                });
+            } else if (rePwd == '') {
+                $.messager.show({
+                    title: '提示',
+                    msg: '请确认密码',
+                    showType: 'show',
+                });
+            } else {
+
+            }
+        }
+    </script>
+
+
+
+</head>
+<
+<body class="easyui-layout" data-options="fit : true,border : false" style="overflow: hidden" scrolling="no">
+
+    @*<div data-options="region:'north',border:false" style="height:60px;background:#B3DFDA;padding:10px">
+        </div>*@
+    <div region="north" border="false" style="overflow: hidden; height: 56px; background: #B3DFDA no-repeat; line-height: 60px; color: #fff; font-family: Verdana, 微软雅黑,黑体; filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(sizingMethod='scale'); -moz-background-size: 100% 100%; background-size: 100% 100%; ">
+        <span style="float:right; padding-right:20px;" class="head">
+            <a href="#" id="editpass" class="easyui-linkbutton" data-options="iconCls:'icon-editpass',plain:true,">修改密码</a>
+            <a href="#" id="loginOut" data-options="iconCls:'icon-exit',plain:true," class="easyui-linkbutton">安全退出</a>
+        </span>
+        <span style="padding-left:10px; font-size: 22px; ">教培管控中心</span>
+    </div>
+
+    <div data-options="region:'west',split:true,title:'导航菜单'" style="width:180px;">
+        <div class="easyui-accordion" id="nav" fit="true" border="false">
+
+            <div title="学生管理" data-options="iconCls:'icon-ok'" style="overflow:auto;">
+                <ul>
+                    <li>
+                        <div>
+                            <a href="javascript:void(0)" class="detail" url="/Student/Index"><span class="icon-ok">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="nav">学生管理</span></a>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+
+        </div>
+    </div>
+
+
+    <div data-options="region:'south',border:false" style="height:50px;background:#A9FACD;padding:10px;">
+        <div class="footer">
+            <div style="width:30%;float: left;text-align: left">当前用户：XXX</div>
+            <div style="width:50%;float: left;text-align: center"> Copyright© lijie</div>
+            <div style="width:20%;float: left;text-align: right"><label id='User'></label></div>
+        </div>
+    </div>
+
+    <div data-options="region:'center'" border="false" style="padding: 1px;overflow-y:hidden">
+
+        <div class="easyui-tabs" id="tabs" fit="true">
+            <div title="欢迎使用">
+                <h1 style="font-size: 24px;">欢迎！</h1>
+                <h1 style="font-size: 24px; color:red;"> Welcome ！</h1>
+            </div>
+
+
+        </div>
+
+    </div>
+
+    <div id="editPwd">
+        <form id="editForm">
+
+            <div style="height:10px"></div>
+            <table>
+
+                <tr>
+                    <td width="80" align="center">
+                        原密码:
+                    </td>
+                    <td>
+                        <input type="password" class="easyui-textbox" required="true" name="txtOldPwd" id="txtOldPwd" />
+                    </td>
+                </tr>
+
+                <tr>
+                    <td height="10"></td>
+                </tr>
+
+                <tr>
+                    <td align="center">
+                        新密码:
+                    </td>
+                    <td>
+                        <input type="password" class="easyui-textbox" required="true" name="txtNewPwd" id="txtNewPwd" />
+                    </td>
+                </tr>
+
+                <tr>
+                    <td height="10"></td>
+                </tr>
+
+                <tr>
+                    <td align="center">
+                        确认密码:
+                    </td>
+                    <td>
+                        <input type="password" class="easyui-textbox" required="true" name="txtRePwd" id="txtRePwd" />
+                    </td>
+                </tr>
+            </table>
+
+        </form>
+    </div>
+</body>
+</html>
+

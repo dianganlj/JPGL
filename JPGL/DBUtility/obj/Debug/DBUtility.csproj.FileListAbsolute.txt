@@ -1,0 +1,14 @@
+E:\JPGL\DBUtility\bin\Debug\JPGL.DBUtility.dll
+E:\JPGL\DBUtility\bin\Debug\JPGL.DBUtility.pdb
+E:\JPGL\DBUtility\bin\Debug\MySql.Data.dll
+E:\JPGL\DBUtility\bin\Debug\System.Data.SQLite.DLL
+E:\JPGL\DBUtility\obj\Debug\DBUtility.csprojResolveAssemblyReference.cache
+E:\JPGL\DBUtility\obj\Debug\JPGL.DBUtility.dll
+E:\JPGL\DBUtility\obj\Debug\JPGL.DBUtility.pdb
+C:\Users\diangan\Desktop\文档\桌面应用程序设计\JPGL\DBUtility\bin\Debug\JPGL.DBUtility.dll
+C:\Users\diangan\Desktop\文档\桌面应用程序设计\JPGL\DBUtility\bin\Debug\JPGL.DBUtility.pdb
+C:\Users\diangan\Desktop\文档\桌面应用程序设计\JPGL\DBUtility\bin\Debug\MySql.Data.dll
+C:\Users\diangan\Desktop\文档\桌面应用程序设计\JPGL\DBUtility\bin\Debug\System.Data.SQLite.DLL
+C:\Users\diangan\Desktop\文档\桌面应用程序设计\JPGL\DBUtility\obj\Debug\DBUtility.csprojResolveAssemblyReference.cache
+C:\Users\diangan\Desktop\文档\桌面应用程序设计\JPGL\DBUtility\obj\Debug\JPGL.DBUtility.dll
+C:\Users\diangan\Desktop\文档\桌面应用程序设计\JPGL\DBUtility\obj\Debug\JPGL.DBUtility.pdb
